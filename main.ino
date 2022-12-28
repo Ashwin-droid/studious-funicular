@@ -60,7 +60,7 @@ void loop () {
             digitalWrite(MOTOR_PIN, HIGH);
             // set the filling status
             isFilling = false;
-        } else if (digitalRead(FS_SV1_T) == LOW && tankID == true) {
+        } else {
             // turn off motor
             digitalWrite(MOTOR_PIN, HIGH);
             // set the filling status
