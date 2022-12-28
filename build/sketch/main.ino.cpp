@@ -9,23 +9,37 @@ int SV = 7; // output               solenoid valve
 bool tankID = false; //             false = tank 1, true = tank 2
 bool isFilling = false; //          false = not filling, true = filling
 
+#line 10 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\main.ino"
+void setup();
+#line 22 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\main.ino"
+void loop();
+#line 10 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\main.ino"
 void setup () {
-    pinMode(MOTOR_PIN, OUTPUT); // negative side switching
+    pinMode(MOTOR_PIN, OUTPUT); // motor
     pinMode(FS_SV0_T, INPUT_PULLUP); // overflow of tank 1
     pinMode(FS_SV0_B, INPUT_PULLUP); // underflow of tank 1
     pinMode(FS_SV1_T, INPUT_PULLUP); // overflow of tank 2
     pinMode(FS_SV1_B, INPUT_PULLUP); // underflow of tank 2
-    pinMode(SV, OUTPUT); // negative side switching
+    pinMode(SV, OUTPUT);   // solenoid valve
     // set solenoid valve to off
     digitalWrite(SV, HIGH);
     // set motor to off
     digitalWrite(MOTOR_PIN, HIGH);
 }
 void loop () {
+    // //serial print for debugging
+    // Serial.print("FS_SV0_T: ");
+    // Serial.println(digitalRead(FS_SV0_T));
+    // Serial.print("FS_SV0_B: ");
+    // Serial.println(digitalRead(FS_SV0_B));
+    // Serial.print("FS_SV1_T: ");
+    // Serial.println(digitalRead(FS_SV1_T));
+    // Serial.print("FS_SV1_B: ");
+    // Serial.println(digitalRead(FS_SV1_B));
     // check if any underflow is triggered
-    if ((digitalRead(FS_SV0_B) == LOW || digitalRead(FS_SV1_B) == LOW) && !isFilling) {
+    if ((digitalRead(FS_SV0_B) == HIGH || digitalRead(FS_SV1_B) == HIGH) && !isFilling) {
         // find which one is triggered
-        if (digitalRead(FS_SV0_B) == LOW) {
+        if (digitalRead(FS_SV0_B) == HIGH) {
             // turn off solenoid valve
             digitalWrite(SV, HIGH);
             // turn on motor
@@ -34,7 +48,7 @@ void loop () {
             tankID = false;
             // set the filling status
             isFilling = true;
-        } else if (digitalRead(FS_SV1_B) == LOW) {
+        } else {
             // turn on solenoid valve
             digitalWrite(SV, LOW);
             // turn on motor

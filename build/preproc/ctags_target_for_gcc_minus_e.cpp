@@ -1,55 +1,75 @@
-# 1 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\build\\sketch\\main.ino.cpp"
-# 1 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project//"
-# 1 "<built-in>"
-# 1 "<command-line>"
-# 1 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\build\\sketch\\main.ino.cpp"
-# 1 "C:\\Users\\ash6c\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.5\\cores\\arduino/Arduino.h" 1
-/*
-  Arduino.h - Main include file for the Arduino SDK
-  Copyright (c) 2005-2013 Arduino Team.  All right reserved.
+# 1 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\main.ino"
+int MOTOR_PIN = 2; // output        motor
+int FS_SV0_T = 3; // input pullup   tank 1 overflow
+int FS_SV0_B = 4; // input pullup   tank 1 underflow
+int FS_SV1_T = 5; // input pullup   tank 2 overflow
+int FS_SV1_B = 6; // input pullup   tank 2 underflow
+int SV = 7; // output               solenoid valve
+bool tankID = false; //             false = tank 1, true = tank 2
+bool isFilling = false; //          false = not filling, true = filling
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-
-
-
-
-# 1 "c:\\users\\ash6c\\appdata\\local\\arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7\\avr\\include\\stdlib.h" 1 3
-
-# 1 "c:\\users\\ash6c\\appdata\\local\\arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7\\avr\\include\\stdlib.h" 3
-/* Copyright (c) 2002, Marek Michalkiewicz
-   Copyright (c) 2004,2007 Joerg Wunsch
-
-   Portions of documentation Copyright (c) 1990, 1991, 1993, 1994
-   The Regents of the University of California.
-
-   All rights reserved.
-
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met:
-
-   * Redistributions of source code must retain the above copyright
-     notice, this list of conditions and the following disclaimer.
-
-   * Redistributions in binary form must reproduce the above copyright
-     notice, this list of conditions and the following disclaimer in
-     the documentation and/or other materials provided with the
-     distribution.
-
-   * Neither the name of the copyright holders nor the names of
-     contributors may be used to endorse or promote products derived
-     from this software without specific prior written permission.
-
-  THIS SOFTWA
+void setup () {
+    pinMode(MOTOR_PIN, 0x1); // motor
+    pinMode(FS_SV0_T, 0x2); // overflow of tank 1
+    pinMode(FS_SV0_B, 0x2); // underflow of tank 1
+    pinMode(FS_SV1_T, 0x2); // overflow of tank 2
+    pinMode(FS_SV1_B, 0x2); // underflow of tank 2
+    pinMode(SV, 0x1); // solenoid valve
+    // set solenoid valve to off
+    digitalWrite(SV, 0x1);
+    // set motor to off
+    digitalWrite(MOTOR_PIN, 0x1);
+}
+void loop () {
+    // //serial print for debugging
+    // Serial.print("FS_SV0_T: ");
+    // Serial.println(digitalRead(FS_SV0_T));
+    // Serial.print("FS_SV0_B: ");
+    // Serial.println(digitalRead(FS_SV0_B));
+    // Serial.print("FS_SV1_T: ");
+    // Serial.println(digitalRead(FS_SV1_T));
+    // Serial.print("FS_SV1_B: ");
+    // Serial.println(digitalRead(FS_SV1_B));
+    // check if any underflow is triggered
+    if ((digitalRead(FS_SV0_B) == 0x1 || digitalRead(FS_SV1_B) == 0x1) && !isFilling) {
+        // find which one is triggered
+        if (digitalRead(FS_SV0_B) == 0x1) {
+            // turn off solenoid valve
+            digitalWrite(SV, 0x1);
+            // turn on motor
+            digitalWrite(MOTOR_PIN, 0x0);
+            // set the tank ID
+            tankID = false;
+            // set the filling status
+            isFilling = true;
+        } else {
+            // turn on solenoid valve
+            digitalWrite(SV, 0x0);
+            // turn on motor
+            digitalWrite(MOTOR_PIN, 0x0);
+            // set the tank ID
+            tankID = true;
+            // set the filling status
+            isFilling = true;
+        }
+    }
+    // check if any overflow is triggered and any tank is filling
+    if ((digitalRead(FS_SV0_T) == 0x0 || digitalRead(FS_SV1_T) == 0x0) && isFilling) {
+        // find which one is triggered
+        if (digitalRead(FS_SV0_T) == 0x0 && tankID == false) {
+            // turn off motor
+            digitalWrite(MOTOR_PIN, 0x1);
+            // set the filling status
+            isFilling = false;
+        } else if (digitalRead(FS_SV1_T) == 0x0 && tankID == true) {
+            // turn off motor
+            digitalWrite(MOTOR_PIN, 0x1);
+            // set the filling status
+            isFilling = false;
+            // turn off solenoid valve
+            digitalWrite(SV, 0x1);
+        }
+    }
+    // delay of 10 seconds
+    delay(10000);
+}
