@@ -11,7 +11,7 @@ bool isFilling = false; //          false = not filling, true = filling
 
 #line 10 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\main.ino"
 void setup();
-#line 22 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\main.ino"
+#line 24 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\main.ino"
 void loop();
 #line 10 "c:\\Users\\ash6c\\Documents\\projects\\Anu-aji-tank_project\\main.ino"
 void setup () {
@@ -25,6 +25,8 @@ void setup () {
     digitalWrite(SV, HIGH);
     // set motor to off
     digitalWrite(MOTOR_PIN, HIGH);
+    // serial print for debugging
+    // Serial.begin(9600);
 }
 void loop () {
     // //serial print for debugging
@@ -48,7 +50,7 @@ void loop () {
             tankID = false;
             // set the filling status
             isFilling = true;
-        } else {
+        } else if (digitalRead(FS_SV1_B) == HIGH) {
             // turn on solenoid valve
             digitalWrite(SV, LOW);
             // turn on motor
@@ -76,6 +78,6 @@ void loop () {
             digitalWrite(SV, HIGH);
         }
     }
-    // delay of 10 seconds
-    delay(10000);
+    // delay of 100 milliseconds
+    delay(100);
 }

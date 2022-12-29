@@ -19,6 +19,8 @@ void setup () {
     digitalWrite(SV, 0x1);
     // set motor to off
     digitalWrite(MOTOR_PIN, 0x1);
+    // serial print for debugging
+    // Serial.begin(9600);
 }
 void loop () {
     // //serial print for debugging
@@ -42,7 +44,7 @@ void loop () {
             tankID = false;
             // set the filling status
             isFilling = true;
-        } else {
+        } else if (digitalRead(FS_SV1_B) == 0x1) {
             // turn on solenoid valve
             digitalWrite(SV, 0x0);
             // turn on motor
@@ -70,6 +72,6 @@ void loop () {
             digitalWrite(SV, 0x1);
         }
     }
-    // delay of 10 seconds
-    delay(10000);
+    // delay of 100 milliseconds
+    delay(100);
 }
